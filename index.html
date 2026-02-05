@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suji Sound Production Studio | Art of Sound</title>
+    <!-- Added Favicon to fix 404 error -->
+    <link rel="icon" href="https://static.wixstatic.com/media/bab62d_ee35ef4cbd454f60a742caf7d9de4408~mv2.png" type="image/png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .service-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .service-card:hover { 
+            transform: translateY(-12px); 
+            border-color: rgba(245, 158, 11, 0.5);
+            box-shadow: 0 20px 40px -15px rgba(245, 158, 11, 0.15);
+        }
+        
+        .visualizer-bar {
+            width: 4px;
+            height: 20px;
+            background: #f59e0b;
+            margin: 0 2px;
+            border-radius: 10px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { height: 10px; opacity: 0.5; }
+            50% { height: 40px; opacity: 1; }
+        }
+
+        #team-modal, #video-modal { transition: opacity 0.4s ease; }
+        .modal-hidden { opacity: 0; pointer-events: none; display: none; }
+        .modal-show { opacity: 1; display: flex; }
+
+        .float-anim { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Page Transition Effects */
+        .page-view { display: none; }
+        .page-view.active { display: block; animation: fadeIn 0.5s ease-out forwards; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        section { scroll-margin-top: 100px; }
+
+        /* Video Preview Effects - Removed grayscale */
+        .video-container video {
+            filter: grayscale(0%);
+            transition: all 0.5s ease;
+        }
+        .group:hover .video-container video {
+            transform: scale(1.05);
+        }
+        
+        /* Mobile Menu Animation - Updated for better stability */
+        #mobile-menu {
+            transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #000; /* Solid black for visibility */
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            z-index: 40;
+        }
+        #mobile-menu.open {
+            max-height: 100vh; /* Ensure full height availability */
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-gray-200 overflow-x-hidden">
+
+    <!-- Navigation Menu -->
+    <nav class="fixed w-full z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center relative z-50">
+            <a href="javascript:void(0)" onclick="showPage('home')" class="flex items-center">
+                <img src="https://static.wixstatic.com/media/bab62d_ee35ef4cbd454f60a742caf7d9de4408~mv2.png" alt="Suji Sound Logo" class="h-16 md:h-20 w-auto transition-all">
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 text-sm font-medium uppercase tracking-widest">
+                <a href="javascript:void(0)" onclick="showPage('home', 'about')" class="hover:text-amber-500 transition-colors">About Us</a>
+                <a href="javascript:void(0)" onclick="showPage('home', 'services')" class="hover:text-amber-500 transition-colors">Services</a>
+                <a id="nav-projects-link" href="javascript:void(0)" onclick="showPage('projects')" class="hover:text-amber-500 transition-colors">Some of Our Projects</a>
+                <a href="javascript:void(0)" onclick="showPage('home', 'team')" class="hover:text-amber-500 transition-colors">Team</a>
+                <a href="javascript:void(0)" onclick="showPage('home', 'contact')" class="hover:text-amber-500 transition-colors">Contact</a>
+            </div>
+
+            <!-- Hamburger Button -->
+            <button class="md:hidden text-white focus:outline-none relative z-50 p-2" onclick="toggleMobileMenu()" aria-label="Toggle Menu">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="md:hidden">
+            <div class="flex flex-col px-6 py-6 space-y-4 text-center text-sm font-medium uppercase tracking-widest">
+                <a href="javascript:void(0)" onclick="showPage('home', 'about'); toggleMobileMenu()" class="hover:text-amber-500 transition-colors py-3 border-b border-white/10">About Us</a>
+                <a href="javascript:void(0)" onclick="showPage('home', 'services'); toggleMobileMenu()" class="hover:text-amber-500 transition-colors py-3 border-b border-white/10">Services</a>
+                <a href="javascript:void(0)" onclick="showPage('projects'); toggleMobileMenu()" class="hover:text-amber-500 transition-colors py-3 border-b border-white/10">Some of Our Projects</a>
+                <a href="javascript:void(0)" onclick="showPage('home', 'team'); toggleMobileMenu()" class="hover:text-amber-500 transition-colors py-3 border-b border-white/10">Team</a>
+                <a href="javascript:void(0)" onclick="showPage('home', 'contact'); toggleMobileMenu()" class="hover:text-amber-500 transition-colors py-3">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE VIEW -->
+    <main id="home-view" class="page-view active">
+        <!-- Hero Section -->
+        <!-- Updated: Changed h-screen to min-h-screen, added pt-32 for mobile spacing -->
+        <header class="relative min-h-screen flex items-center justify-center text-center px-6 pt-32 pb-12 overflow-hidden">
+            <div class="absolute inset-0 z-0 scale-110">
+                <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=2070" 
+                     class="w-full h-full object-cover opacity-40 float-anim" alt="Studio Background">
+                <div class="absolute inset-0 bg-black/40"></div>
+            </div>
+            <div class="relative z-10 max-w-4xl" data-aos="zoom-out" data-aos-duration="1500">
+                <div class="flex justify-center items-end h-12 mb-4 md:mb-6">
+                    <div class="visualizer-bar" style="animation-delay: 0.1s"></div>
+                    <div class="visualizer-bar" style="animation-delay: 0.3s"></div>
+                    <div class="visualizer-bar" style="animation-delay: 0.2s"></div>
+                    <div class="visualizer-bar" style="animation-delay: 0.5s"></div>
+                    <div class="visualizer-bar" style="animation-delay: 0.4s"></div>
+                </div>
+                <!-- Updated: Smaller font size on mobile (text-3xl) to fit iPhone SE screens -->
+                <h1 class="text-3xl sm:text-5xl md:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight uppercase tracking-tighter">
+                    Where the Art of Sound <br>Meets <span class="text-amber-500 underline decoration-amber-500/30 underline-offset-8">Expertise</span>
+                </h1>
+                <p class="text-lg md:text-2xl text-gray-300 mb-8 md:mb-10 font-light max-w-2xl mx-auto">
+                    With a team boasting over 20 years of experience, we are your hub for creative and technical excellence in sound production.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="javascript:void(0)" onclick="showPage('projects')" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-4 px-10 rounded-full transition-all duration-300 uppercase text-xs md:text-sm tracking-widest hover:scale-105 shadow-lg shadow-amber-500/20">
+                        View Some of Our Projects
+                    </a>
+                    <a href="#services" class="border border-white/20 hover:border-amber-500 text-white font-bold py-4 px-10 rounded-full transition-all duration-300 uppercase text-xs md:text-sm tracking-widest">
+                        Explore Services
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- About Us Section -->
+        <section id="about" class="py-24 bg-[#0f0f0f]">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-16 items-center">
+                    <div data-aos="fade-right">
+                        <h2 class="text-amber-500 text-sm font-bold uppercase tracking-[0.3em] mb-4">About Us</h2>
+                        <h3 class="text-4xl font-bold text-white mb-6 leading-snug">Decades of Expertise in Every Beat</h3>
+                        <p class="text-gray-400 leading-relaxed mb-6 text-lg">
+                            Suji Sound Production Studio is where the art of sound meets decades of expertise. With a team boasting over 20 years of experience in the audio industry, we are proud to be a newly established hub for creative and technical excellence in sound production.
+                        </p>
+                        <p class="text-gray-400 leading-relaxed text-lg">
+                            Our studio is dedicated to delivering top-tier services in dubbing, localization, music localization, sound design, and mixing, catering to a diverse range of clients and projects.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4" data-aos="fade-left">
+                        <div class="bg-zinc-900 p-8 rounded-2xl border border-white/5 text-center transition-transform hover:scale-105">
+                            <span class="text-4xl font-bold text-amber-500 block mb-2 tracking-tighter">20+</span>
+                            <span class="text-sm uppercase tracking-widest text-gray-500 font-bold">Years Exp.</span>
+                        </div>
+                        <div class="bg-zinc-900 p-8 rounded-2xl border border-white/5 text-center transition-transform hover:scale-105">
+                            <span class="text-4xl font-bold text-white block mb-2 tracking-tighter">100%</span>
+                            <span class="text-sm uppercase tracking-widest text-gray-500 font-bold">Quality</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-24 bg-[#0a0a0a]">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16" data-aos="fade-up">
+                    <h2 class="text-amber-500 text-sm font-bold uppercase tracking-[0.3em] mb-4">Our Services</h2>
+                    <h3 class="text-4xl font-bold text-white mb-6">Expert Audio Post-Production</h3>
+                    <p class="text-gray-400 max-w-2xl mx-auto">At Suji Sound, we offer a full spectrum of audio post-production services designed to elevate your content and enhance your audience’s experience.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Service Cards -->
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="100">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl shadow-inner">
+                            <i class="fas fa-microphone-alt"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">Dubbing</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">We provide professional dubbing services in multiple languages, ensuring your content resonates with global audiences. Our expert voice actors, directors, and sound engineers work together to match tone, timing, and emotion.</p>
+                    </div>
+
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="200">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">Lyric Writing & Translation</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">We offer creative lyric writing and professional translation services for songs across different languages and cultures. Our team ensures your message resonates clearly and artistically with your audience.</p>
+                    </div>
+
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="300">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">Voice Over</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">From commercials and corporate videos to animations and e-learning materials, we offer clear, expressive, and impactful voice-over recordings that captivate your audience.</p>
+                    </div>
+
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="100">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">Music Editing</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">Precise and creative music editing to match the rhythm, mood, and timing of your project. We ensure seamless transitions and a polished, cohesive sound tailored to your needs.</p>
+                    </div>
+
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="200">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">Mixing</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">Our audio mixing services balance every sonic element — dialogue, music, sound effects — into a cohesive and immersive soundscape tailored to the medium.</p>
+                    </div>
+
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="300">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl">
+                            <i class="fas fa-volume-up"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">Sound Design</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">We create unique and expressive soundscapes that enhance storytelling. From atmospheric textures to high-impact effects, we add depth and character to your content.</p>
+                    </div>
+
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="100">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">Jingle Production</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">We compose catchy and memorable jingles that leave a lasting impression. Crafted to reflect your brand identity and engage your target audience through sound.</p>
+                    </div>
+
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="200">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl">
+                            <i class="fas fa-cut"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">Dialogue Editing</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">Cleaning and balancing of spoken tracks for maximum clarity. We remove unwanted noise and ensure every word is heard exactly as intended.</p>
+                    </div>
+
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5" data-aos="fade-up" data-aos-delay="300">
+                        <div class="w-14 h-14 bg-amber-500/10 flex items-center justify-center rounded-xl mb-6 text-amber-500 text-2xl">
+                            <i class="fas fa-sync"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4">ADR</h4>
+                        <p class="text-gray-500 leading-relaxed text-sm">Specializing in precise dialogue replacement and synchronization for film and TV. Our ADR sessions ensure perfect timing and natural delivery.</p>
+                    </div>
+
+                    <!-- Audio Description Wide Card -->
+                    <div class="service-card bg-[#151515] p-10 rounded-3xl border border-white/5 lg:col-span-3" data-aos="fade-up">
+                        <div class="flex flex-col md:flex-row md:items-center gap-6">
+                            <div class="w-16 h-16 bg-amber-500/10 flex items-center justify-center rounded-xl flex-shrink-0 text-amber-500 text-3xl">
+                                <i class="fas fa-closed-captioning"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-white mb-2">Audio Description</h4>
+                                <p class="text-gray-500 leading-relaxed text-sm">Making visual content accessible to visually impaired audiences. We craft detailed narration describing key visual elements without disrupting the original experience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section id="team" class="py-24 bg-[#0a0a0a]">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <h2 class="text-amber-500 text-sm font-bold uppercase tracking-[0.3em] mb-4">Meet the Team</h2>
+                <h3 class="text-4xl font-bold text-white mb-6">A Passionate Team of Professionals</h3>
+                <p class="text-gray-400 max-w-3xl mx-auto mb-16">At Suji Sound, we are a passionate team of creatives and audio professionals who believe in the power of sound.</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                    <!-- Person 1: Deniz Sujana -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Deniz Sujana', 'Studio Owner, Music Director', 'Studio Owner, Music Director, Music Editing, Lyricist, Melodyne Specialist, Voice Talent', 'https://static.wixstatic.com/media/bab62d_e03ea2ffbdf8438abbcf25ffb197cb8b~mv2.jpeg', 'https://www.instagram.com/sujana/', 'https://www.linkedin.com/in/deniz-sujana-%F0%9F%94%9C-mip-london-b0577629/')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_e03ea2ffbdf8438abbcf25ffb197cb8b~mv2.jpeg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Deniz Sujana</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Studio Owner, Music Director</p>
+                    </div>
+
+                    <!-- Person 2: Melike Öztürk -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Melike Öztürk', 'Project Manager, Voice Talent', 'Project Manager, Voice Talent', 'https://static.wixstatic.com/media/bab62d_e6df44176646489aa21646335e9b95e8~mv2.jpg', 'https://www.instagram.com/meruchiii/', 'https://www.linkedin.com/in/melikee-ozturk/')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_e6df44176646489aa21646335e9b95e8~mv2.jpg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Melike Öztürk</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Project Manager, Voice Talent</p>
+                    </div>
+
+                    <!-- Person 3: Ali Seyitoğlu -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Ali Seyitoğlu', 'Dialogue Director, Cast Director', 'Dialogue Director, Cast Director, Voice Talent', 'https://static.wixstatic.com/media/bab62d_c111fd86f67b448ba66be9523df9874b~mv2.jpeg', 'https://www.instagram.com/seyitson/', '')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_c111fd86f67b448ba66be9523df9874b~mv2.jpeg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Ali Seyitoğlu</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Dialogue Director, Cast Director</p>
+                    </div>
+
+                    <!-- Person 4: Erkut Kaymaz -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Erkut Kaymaz', 'Audio Engineer, Music Director', 'Audio Engineer, Music Director', 'https://static.wixstatic.com/media/bab62d_2a93e1dec9f0482b86f8fd36ce2e439f~mv2.jpeg', 'https://www.instagram.com/erkutkaymaz/', 'https://www.linkedin.com/in/erkutkaymaz/')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_2a93e1dec9f0482b86f8fd36ce2e439f~mv2.jpeg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Erkut Kaymaz</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Audio Engineer, Music Director</p>
+                    </div>
+
+                    <!-- Person 5: İzgi Gülfem Torunlar -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('İzgi Gülfem Torunlar', 'Music Director, Lyricist', 'Music Director, Lyricist, Vocal Coach, QC, Voice Talent', 'https://static.wixstatic.com/media/bab62d_64eeeb0b5c4841c4a208679080015e83~mv2.jpg', '', '')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_64eeeb0b5c4841c4a208679080015e83~mv2.jpg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">İzgi Gülfem Torunlar</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Music Director, Lyricist</p>
+                    </div>
+
+                    <!-- Person 6: Taylan Erdağ -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Taylan Erdağ', 'Composer, Music Mixing', 'Composer, Music Mixing, Voice Talent', 'https://static.wixstatic.com/media/bab62d_cd207d66025d41d1943c510dc033a75f~mv2.jpg', 'https://www.instagram.com/taylanerdag/', 'https://www.linkedin.com/in/taylan-erda%C4%9F-439a4823b/')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_cd207d66025d41d1943c510dc033a75f~mv2.jpg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Taylan Erdağ</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Composer, Music Mixing</p>
+                    </div>
+
+                    <!-- Person 7: Yağmur Erdağ -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Yağmur Erdağ', 'Project Manager, Voice Talent', 'Project Manager, Voice Talent', 'https://static.wixstatic.com/media/bab62d_c3744569be9e49b7b837738a46b5dcb3~mv2.png', 'https://www.instagram.com/cozy_rain11/', '')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_c3744569be9e49b7b837738a46b5dcb3~mv2.png" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Yağmur Erdağ</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Project Manager, Voice Talent</p>
+                    </div>
+
+                    <!-- Person 8: Adnan Aydın -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Adnan Aydın', 'Sound Engineer', 'Sound Engineer', 'https://static.wixstatic.com/media/bab62d_38e79243cec14574ba5997005fca03d8~mv2.jpg', '', '')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_38e79243cec14574ba5997005fca03d8~mv2.jpg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Adnan Aydın</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Sound Engineer</p>
+                    </div>
+
+                    <!-- Person 9: Levent Özgenç -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Levent Özgenç', 'Sound Engineer', 'Sound Engineer', 'https://static.wixstatic.com/media/bab62d_d39a11e0d3ae4d68b5c036031d14e906~mv2.jpg', '', '')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_d39a11e0d3ae4d68b5c036031d14e906~mv2.jpg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Levent Özgenç</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Sound Engineer</p>
+                    </div>
+
+                    <!-- Person 10: Samwise Suji -->
+                    <div class="group text-center cursor-pointer" onclick="openTeamModal('Samwise Suji', 'Morale Coordinator', 'Morale Coordinator', 'https://static.wixstatic.com/media/bab62d_ac3f6163b96b48ba800787a1c01e568e~mv2.jpg', '', '')">
+                        <div class="aspect-square bg-zinc-900 rounded-3xl mb-4 overflow-hidden border border-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="https://static.wixstatic.com/media/bab62d_ac3f6163b96b48ba800787a1c01e568e~mv2.jpg" class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                        </div>
+                        <h5 class="text-white font-bold group-hover:text-amber-500 transition-colors duration-500">Samwise Suji</h5>
+                        <p class="text-amber-500 text-[10px] uppercase tracking-widest font-semibold">Morale Coordinator</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-24 bg-[#0f0f0f]">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="bg-zinc-900 rounded-[3rem] p-12 lg:p-20 overflow-hidden relative border border-white/5" data-aos="flip-up">
+                    <div class="grid lg:grid-cols-2 gap-16">
+                        <div>
+                            <h3 class="text-4xl font-bold text-white mb-6 leading-tight">Let's Create <br><span class="text-amber-500 uppercase">Together.</span></h3>
+                            <p class="text-gray-400 mb-10 text-lg">Have a project that needs a world-class sound? Reach out to us.</p>
+                            
+                            <div class="space-y-6 text-gray-300">
+                            <div class="flex items-center space-x-4 group cursor-pointer">
+                                <i class="fas fa-envelope text-amber-500 w-6 group-hover:scale-125 transition-transform"></i>
+                                <span class="group-hover:text-amber-500 transition-colors">info@sujisound.com</span>
+                            </div>
+                            <div class="flex items-center space-x-4 group cursor-pointer">
+                                <i class="fas fa-map-marker-alt text-amber-500 w-6 group-hover:scale-125 transition-transform"></i>
+                                <span class="group-hover:text-amber-500 transition-colors">Istanbul, Turkey</span>
+                            </div>
+                        </div>
+
+                        <!-- Social Media Links -->
+                            <div class="flex space-x-6 mt-12 pt-10 border-t border-white/5">
+                                <a href="https://www.youtube.com/@SujiSoundProduction" target="_blank" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-xl hover:bg-red-600 hover:text-white transition-all transform hover:scale-110">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                                <a href="https://www.instagram.com/sujisoundproduction/" target="_blank" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-xl hover:bg-gradient-to-tr from-yellow-500 via-pink-600 to-purple-700 hover:text-white transition-all transform hover:scale-110">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/company/suji-sound-production/" target="_blank" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-xl hover:bg-blue-700 hover:text-white transition-all transform hover:scale-110">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Contact Form -->
+                        <!-- 
+                            Not: Arka planda mail göndermek için Formspree kullanabilirsiniz.
+                            Form etiketini şöyle güncelleyin: <form action="https://formspree.io/f/SIZIN_FORM_ID" method="POST">
+                        -->
+                        <form class="space-y-4" id="contact-form" onsubmit="return false;">
+                            <div>
+                                <input type="text" id="contact-name" name="name" placeholder="Name" class="w-full bg-[#0a0a0a] border border-white/10 rounded-2xl py-4 px-6 focus:border-amber-500 outline-none transition placeholder-gray-600 focus:ring-2 focus:ring-amber-500/20" required>
+                            </div>
+                            <textarea id="contact-message" name="message" rows="4" placeholder="How can we help?" class="w-full bg-[#0a0a0a] border border-white/10 rounded-2xl py-4 px-6 focus:border-amber-500 outline-none transition placeholder-gray-600 focus:ring-2 focus:ring-amber-500/20" required></textarea>
+                            <button type="button" onclick="sendMail()" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-bold py-5 rounded-2xl transition duration-300 uppercase tracking-widest text-sm shadow-xl shadow-amber-500/20 active:scale-95">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="py-12 border-t border-white/5 text-center bg-[#0a0a0a]">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex justify-center mb-8">
+                    <img src="https://static.wixstatic.com/media/bab62d_ee35ef4cbd454f60a742caf7d9de4408~mv2.png" alt="Suji Sound Logo" class="h-24 md:h-32 w-auto transition-all">
+                </div>
+                <div class="flex justify-center flex-wrap gap-x-12 gap-y-4 mb-8 text-gray-500 text-[10px] font-medium uppercase tracking-[0.2em]">
+                    <a href="javascript:void(0)" onclick="showPage('home', 'about')" class="hover:text-white transition-colors">About Us</a>
+                    <a href="javascript:void(0)" onclick="showPage('home', 'services')" class="hover:text-white transition-colors">Services</a>
+                    <a href="javascript:void(0)" onclick="showPage('projects')" class="hover:text-white transition-colors">Some of Our Projects</a>
+                    <a href="javascript:void(0)" onclick="showPage('home', 'contact')" class="hover:text-white transition-colors">Contact</a>
+                </div>
+                <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase">© 2026 SUJI SOUND PRODUCTION STUDIO. PRECISION IN EVERY DETAIL.</p>
+            </div>
+        </footer>
+    </main>
+
+    <!-- PROJECTS PAGE VIEW -->
+    <main id="projects-view" class="page-view py-32">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="mb-20 text-center">
+                <h2 class="text-amber-500 text-sm font-bold uppercase tracking-[0.4em] mb-4" data-aos="fade-down">Some of Our Projects</h2>
+                <h3 class="text-5xl font-bold text-white mb-6">Creative Excellence</h3>
+                <p class="text-gray-500 max-w-2xl mx-auto">Explore our world-class audio productions across various industries including film, digital media, and branding.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Project: Arco -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_5f9a0be6818a4ba497b68d34ffd9a6a6/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_de21ba6657f84de58089ee49485c85e5~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_5f9a0be6818a4ba497b68d34ffd9a6a6/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">Arco</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">Arco is a 2025 animated science fantasy film written and directed by Ugo Bienvenu in his feature film directorial debut and co-produced by Natalie Portman.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">DUBBING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">5.1 MIX</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Feride -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_3aad9b45070346a3887abecce7a55353/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_949f300f07fa43fbbb564716925e40e8~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_3aad9b45070346a3887abecce7a55353/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">Feride</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">Feride is a Turkish adult animated comedy series that premiered in late 2025 as a Max Original on HBO Max.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOICE OVER</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">SOUND DESIGN</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">STEREO MIX</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Wonka -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_5c561df79d4a41c19d84d02ca0184a17/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_56f02de4919e4c3aa8892784a2f5b423~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_5c561df79d4a41c19d84d02ca0184a17/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">Wonka</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">Wonka is a 2023 musical fantasy film directed by Paul King, who co-wrote the screenplay with Simon Farnaby.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL EDITING</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Hazbin Hotel -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_d5386d1443c0496e85aa2e787c0ec37b/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_6825234c78e74d7bb999cc0e39c33ca9~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_d5386d1443c0496e85aa2e787c0ec37b/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">Hazbin Hotel</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">Hazbin Hotel is an American adult animated musical black comedy television series created, directed, and executive-produced by Vivienne "VivziePop" Medrano.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL RECORDING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL EDITING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">5.1 MIX</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Doraemon -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_9f5dac68feba4c11bba6583bff0cd019/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_8d6b10a568ac46a58bb7d2b4a7945aee~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_9f5dac68feba4c11bba6583bff0cd019/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">Doraemon</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">Doraemon is a Japanese animated science fiction comedy television series created by Fujiko F. Fujio, based on the manga of the same name.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL RECORDING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL EDITING</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: The Book of Life -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_f2170a53672f4bcba23260b4e10b597a/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_9a6451e35b3546da8eea9a9f8e790bc9~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_f2170a53672f4bcba23260b4e10b597a/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">The Book of Life</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">The Book of Life is a 2014 American animated fantasy adventure comedy film directed by Jorge R. Gutierrez.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL EDITING</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Spellbound -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_360f8882547c41aa9b6734aab422354c/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_8a458d4f1b35400880438d0b780165b6~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_360f8882547c41aa9b6734aab422354c/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">Spellbound</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">Spellbound is a 2024 American animated musical fantasy comedy film directed by Vicky Jenson.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL RECORDING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL EDITING</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Paddington in Peru -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_8aa9ea560a3a46fb96da1fed88cefa02/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_87a6dc82ecb346ed9481b5506b3d1456~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_8aa9ea560a3a46fb96da1fed88cefa02/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">Paddington in Peru</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">Paddington in Peru is a 2024 American live-action animated adventure comedy film directed by Dougal Wilson.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL RECORDING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL EDITING</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: IT: Welcome To Derry -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_41bb06e8aede42298b9bcaf8127e753d/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_6216dfffb4304005a45fece11ba6a22b~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_41bb06e8aede42298b9bcaf8127e753d/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">It: Welcome to Derry</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">It: Welcome to Derry is an American supernatural horror television series based on Stephen King's 1986 novel It.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL RECORDING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL EDITING</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: In Your Dreams -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_76408c29a7104470b742dcc08857d67e/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_08dbeb26a1554c33bc669f7fdcc9b70f~mv2.jpg" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_76408c29a7104470b742dcc08857d67e/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">In Your Dreams</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">In Your Dreams is a 2025 American animated adventure comedy film directed by Alex Woo, and co-directed by Erik Benson.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL RECORDING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VIDEO EDITING</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Phineas and Ferb -->
+                <div class="group bg-zinc-900/50 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-amber-500/30 transition-all duration-500 cursor-pointer" data-aos="fade-up" onclick="openVideoModal('https://video.wixstatic.com/video/bab62d_1c8c6f7f6b5a47a7b770c64451a288be/1080p/mp4/file.mp4')">
+                    <div class="aspect-video relative overflow-hidden video-container">
+                        <video class="w-full h-full object-cover" muted loop playsinline poster="https://static.wixstatic.com/media/bab62d_ec0793053ca240239dc39bd3e523710f~mv2.webp" onmouseover="this.play()" onmouseout="this.pause()">
+                            <source src="https://video.wixstatic.com/video/bab62d_1c8c6f7f6b5a47a7b770c64451a288be/1080p/mp4/file.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-play text-4xl text-amber-500 transform scale-125"></i>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Featured Project</span>
+                        <h4 class="text-3xl font-bold text-white mb-4">Phineas and Ferb</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-8">Phineas and Ferb is an American animated musical-comedy television series created by Dan Povenmire and Jeff "Swampy" Marsh for Disney Channel and Disney XD. The series originally aired on the networks for four seasons between 2007 and 2015, and returned for the first of two additional seasons in 2025.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">MUSIC LOCALIZATION</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL RECORDING</span>
+                            <span class="px-4 py-1.5 bg-white/5 rounded-full text-[10px] text-gray-400 font-bold tracking-widest border border-white/5 uppercase">VOCAL EDITING</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-24 text-center">
+                <button onclick="showPage('home')" class="group inline-flex items-center space-x-4 bg-white/5 hover:bg-amber-500 hover:text-black text-white px-10 py-5 rounded-full text-xs font-bold uppercase tracking-[0.2em] transition-all border border-white/10">
+                    <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-2"></i> 
+                    <span>Back to Home</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer for Projects page -->
+        <footer class="py-12 border-t border-white/5 text-center bg-[#0a0a0a]">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <div class="flex justify-center mb-8">
+                    <img src="https://static.wixstatic.com/media/bab62d_ee35ef4cbd454f60a742caf7d9de4408~mv2.png" alt="Suji Sound Logo" class="h-24 md:h-32 w-auto transition-all">
+                </div>
+                <div class="flex justify-center flex-wrap gap-x-12 gap-y-4 mb-8 text-gray-500 text-[10px] font-medium uppercase tracking-[0.2em]">
+                    <a href="javascript:void(0)" onclick="showPage('home', 'about')" class="hover:text-white transition-colors">About Us</a>
+                    <a href="javascript:void(0)" onclick="showPage('home', 'services')" class="hover:text-white transition-colors">Services</a>
+                    <a href="javascript:void(0)" onclick="showPage('projects')" class="hover:text-white transition-colors">Some of Our Projects</a>
+                    <a href="javascript:void(0)" onclick="showPage('home', 'contact')" class="hover:text-white transition-colors">Contact</a>
+                </div>
+                <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase">© 2026 SUJI SOUND PRODUCTION STUDIO. PRECISION IN EVERY DETAIL.</p>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Team Modal -->
+    <div id="team-modal" class="fixed inset-0 z-[100] modal-hidden items-center justify-center p-4 bg-black/90 backdrop-blur-md" onclick="closeTeamModal(event)">
+        <div class="bg-zinc-900 border border-white/10 max-w-xl w-full rounded-[2.5rem] overflow-hidden relative" onclick="event.stopPropagation()">
+            <button class="absolute top-6 right-6 text-white/50 hover:text-white text-2xl transition-colors" onclick="closeTeamModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="p-10 text-center">
+                <div class="w-40 h-40 mx-auto rounded-3xl overflow-hidden border-2 border-amber-500/30 mb-6 shadow-2xl shadow-amber-500/10">
+                    <img id="modal-img" src="" class="w-full h-full object-cover">
+                </div>
+                <h4 id="modal-name" class="text-3xl font-bold text-white mb-2 tracking-tight"></h4>
+                <p id="modal-role" class="text-amber-500 font-semibold mb-6 tracking-wide text-sm px-4"></p>
+                <div class="flex justify-center space-x-6 mb-8" id="modal-socials">
+                    <a id="modal-ig" href="#" target="_blank" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-xl hover:bg-amber-500 hover:text-black transition transform hover:scale-110">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a id="modal-li" href="#" target="_blank" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-xl hover:bg-amber-500 hover:text-black transition transform hover:scale-110">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+                <div class="pt-8 border-t border-white/5">
+                    <p class="text-gray-500 text-[10px] uppercase tracking-[0.2em] mb-4 font-bold">Focus & Expertise</p>
+                    <div class="flex flex-wrap justify-center gap-2" id="modal-tags"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="video-modal" class="fixed inset-0 z-[110] modal-hidden items-center justify-center p-4 bg-black/95 backdrop-blur-xl" onclick="closeVideoModal()">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+            <button class="absolute top-4 right-4 z-20 w-12 h-12 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-amber-500 transition shadow-lg" onclick="closeVideoModal()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <video id="main-player" class="w-full h-full" controls playsinline>
+                <source src="" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true, offset: 100, easing: 'ease-out-cubic' });
+
+        // Mail Gönderme Fonksiyonu (Mailto Yöntemi)
+        function sendMail() {
+            const name = document.getElementById('contact-name').value;
+            const message = document.getElementById('contact-message').value;
+
+            // Basit doğrulama
+            if (!name || !message) {
+                // Alanlar boşsa kullanıcıyı uyar (titretme efekti eklenebilir)
+                const inputs = document.querySelectorAll('#contact-form input, #contact-form textarea');
+                inputs.forEach(input => {
+                    if(!input.value) input.classList.add('border-red-500');
+                });
+                setTimeout(() => {
+                    inputs.forEach(input => input.classList.remove('border-red-500'));
+                }, 2000);
+                return;
+            }
+
+            const subject = `New Project Inquiry from ${name}`;
+            const body = `Name: ${name}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+            
+            // Kullanıcının varsayılan mail uygulamasını açar
+            window.location.href = `mailto:info@sujisound.com?subject=${subject}&body=${body}`;
+        }
+
+        function showPage(pageId, sectionId = null) {
+            document.querySelectorAll('.page-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            const targetView = document.getElementById(pageId + '-view');
+            if(targetView) {
+                targetView.classList.add('active');
+                window.scrollTo(0, 0);
+                
+                if (pageId === 'home' && sectionId) {
+                    setTimeout(() => {
+                        const section = document.getElementById(sectionId);
+                        if (section) section.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+
+            const projectsLink = document.getElementById('nav-projects-link');
+            if (pageId === 'projects') {
+                projectsLink.classList.add('text-amber-500', 'border-b-2', 'border-amber-500', 'pb-1');
+            } else {
+                projectsLink.classList.remove('text-amber-500', 'border-b-2', 'border-amber-500', 'pb-1');
+            }
+
+            AOS.refresh();
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('open')) {
+                menu.classList.remove('open');
+            } else {
+                menu.classList.add('open');
+            }
+        }
+
+        function openTeamModal(name, shortRole, longRole, img, ig, li) {
+            const modal = document.getElementById('team-modal');
+            document.getElementById('modal-name').innerText = name;
+            document.getElementById('modal-role').innerText = longRole;
+            document.getElementById('modal-img').src = img;
+            const igBtn = document.getElementById('modal-ig');
+            const liBtn = document.getElementById('modal-li');
+            if (ig && ig !== '') { igBtn.href = ig; igBtn.classList.remove('hidden'); } else { igBtn.classList.add('hidden'); }
+            if (li && li !== '') { liBtn.href = li; liBtn.classList.remove('hidden'); } else { liBtn.classList.add('hidden'); }
+            const tagsContainer = document.getElementById('modal-tags');
+            tagsContainer.innerHTML = '';
+            const tags = longRole.split(',').map(tag => tag.trim());
+            tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = "bg-white/5 text-white/60 px-4 py-1.5 rounded-full text-[10px] font-bold border border-white/5 uppercase tracking-wider";
+                span.innerText = tag;
+                tagsContainer.appendChild(span);
+            });
+            modal.classList.remove('modal-hidden');
+            modal.classList.add('modal-show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTeamModal() {
+            const modal = document.getElementById('team-modal');
+            modal.classList.remove('modal-show');
+            modal.classList.add('modal-hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openVideoModal(videoUrl) {
+            const modal = document.getElementById('video-modal');
+            const player = document.getElementById('main-player');
+            player.src = videoUrl;
+            modal.classList.remove('modal-hidden');
+            modal.classList.add('modal-show');
+            player.play();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('video-modal');
+            const player = document.getElementById('main-player');
+            player.pause();
+            player.src = "";
+            modal.classList.remove('modal-show');
+            modal.classList.add('modal-hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Escape') {
+                closeTeamModal();
+                closeVideoModal();
+            }
+        });
+    </script>
+</body>
+</html>
